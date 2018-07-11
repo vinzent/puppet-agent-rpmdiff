@@ -1,13 +1,9 @@
 /etc/logrotate.d/pxp-agent
 /etc/puppetlabs/code/environments/production/environment.conf
 /etc/puppetlabs/code/environments/production/hiera.yaml
-/etc/puppetlabs/mcollective/client.cfg
-/etc/puppetlabs/mcollective/facts.yaml
-/etc/puppetlabs/mcollective/server.cfg
 /etc/puppetlabs/puppet/auth.conf
 /etc/puppetlabs/puppet/hiera.yaml
 /etc/puppetlabs/puppet/puppet.conf
-/etc/sysconfig/mcollective
 /etc/sysconfig/puppet
 /etc/sysconfig/pxp-agent
 /opt/puppetlabs/puppet/share/vim/puppet-vimfiles/ftdetect/puppet.vim
