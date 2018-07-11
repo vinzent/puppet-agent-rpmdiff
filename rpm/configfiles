@@ -1,4 +1,3 @@
-/etc/logrotate.d/mcollective
 /etc/logrotate.d/pxp-agent
 /etc/puppetlabs/code/environments/production/environment.conf
 /etc/puppetlabs/code/environments/production/hiera.yaml
