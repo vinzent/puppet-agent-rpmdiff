@@ -19,15 +19,15 @@ if [ "$1" -gt 1 ] ; then
 # can drop them back in place if the package manager
 # tries to remove it.
 if [ -e /etc/puppetlabs/code/hiera.yaml ]; then
- cp -a /etc/puppetlabs/code/hiera.yaml{,.pkg-old}
+ mv /etc/puppetlabs/code/hiera.yaml{,.pkg-old}
  touch /etc/puppetlabs/puppet/remove_hiera5_files.rm
 fi
 if [ -e /etc/puppetlabs/puppet/hiera.yaml ]; then
- cp -a /etc/puppetlabs/puppet/hiera.yaml{,.pkg-old}
+ mv /etc/puppetlabs/puppet/hiera.yaml{,.pkg-old}
  touch /etc/puppetlabs/puppet/remove_hiera5_files.rm
 fi
 if [ -e /etc/puppetlabs/code/environments/production/hiera.yaml ]; then
- cp -a /etc/puppetlabs/code/environments/production/hiera.yaml{,.pkg-old}
+ mv /etc/puppetlabs/code/environments/production/hiera.yaml{,.pkg-old}
  touch /etc/puppetlabs/puppet/remove_hiera5_files.rm
 fi
 
