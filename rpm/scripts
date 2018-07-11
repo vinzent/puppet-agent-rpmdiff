@@ -1,0 +1,155 @@
+preinstall scriptlet (using /bin/sh):
+# Save state so we know later if this is an upgrade or an install
+mkdir -p /var/lib/rpm-state/puppet-agent
+if [ "$1" -eq 1 ] ; then
+ touch /var/lib/rpm-state/puppet-agent/install
+fi
+if [ "$1" -gt 1 ] ; then
+ touch /var/lib/rpm-state/puppet-agent/upgrade
+fi
+
+# Run preinstall scripts on install if defined
+if [ "$1" -eq 1 ] ; then
+ : no preinstall scripts provided
+fi
+
+# Run preinstall scripts on upgrade if defined
+if [ "$1" -gt 1 ] ; then
+ # Backup the old hiera configs if present, so that we
+# can drop them back in place if the package manager
+# tries to remove it.
+if [ -e /etc/puppetlabs/code/hiera.yaml ]; then
+ mv /etc/puppetlabs/code/hiera.yaml{,.pkg-old}
+ touch /etc/puppetlabs/puppet/remove_hiera5_files.rm
+fi
+if [ -e /etc/puppetlabs/puppet/hiera.yaml ]; then
+ mv /etc/puppetlabs/puppet/hiera.yaml{,.pkg-old}
+ touch /etc/puppetlabs/puppet/remove_hiera5_files.rm
+fi
+if [ -e /etc/puppetlabs/code/environments/production/hiera.yaml ]; then
+ mv /etc/puppetlabs/code/environments/production/hiera.yaml{,.pkg-old}
+ touch /etc/puppetlabs/puppet/remove_hiera5_files.rm
+fi
+
+fi
+postinstall scriptlet (using /bin/sh):
+ # switch based on systemd vs systemv vs smf vs aix
+ #
+ 
+if [ $1 -eq 1 ] ; then 
+        # Initial installation 
+        systemctl preset puppet.service >/dev/null 2>&1 || : 
+fi 
+
+ # switch based on systemd vs systemv vs smf vs aix
+ #
+ 
+if [ $1 -eq 1 ] ; then 
+        # Initial installation 
+        systemctl preset mcollective.service >/dev/null 2>&1 || : 
+fi 
+
+ # switch based on systemd vs systemv vs smf vs aix
+ #
+ 
+if [ $1 -eq 1 ] ; then 
+        # Initial installation 
+        systemctl preset pxp-agent.service >/dev/null 2>&1 || : 
+fi
+preuninstall scriptlet (using /bin/sh):
+# Run pre-uninstall scripts on upgrade if defined
+if [ "$1" -eq 1 ] ; then
+ : no preremove scripts provided
+fi
+
+# Run pre-uninstall scripts on removal if defined
+if [ "$1" -eq 0 ] ; then
+ : no preremove scripts provided
+fi
+
+ 
+if [ $1 -eq 0 ] ; then 
+        # Package removal, not upgrade 
+        systemctl --no-reload disable puppet.service > /dev/null 2>&1 || : 
+        systemctl stop puppet.service > /dev/null 2>&1 || : 
+fi 
+
+ 
+if [ $1 -eq 0 ] ; then 
+        # Package removal, not upgrade 
+        systemctl --no-reload disable mcollective.service > /dev/null 2>&1 || : 
+        systemctl stop mcollective.service > /dev/null 2>&1 || : 
+fi 
+
+ 
+if [ $1 -eq 0 ] ; then 
+        # Package removal, not upgrade 
+        systemctl --no-reload disable pxp-agent.service > /dev/null 2>&1 || : 
+        systemctl stop pxp-agent.service > /dev/null 2>&1 || : 
+fi
+postuninstall scriptlet (using /bin/sh):
+# Run post-uninstall scripts on upgrade if defined
+if [ "$1" -eq 1 ] ; then
+ : no postremove scripts provided
+fi
+
+# Run post-uninstall scripts on removal if defined
+if [ "$1" -eq 0 ] ; then
+ : no postremove scripts provided
+fi
+
+ # switch based on systemd vs systemv vs smf vs aix
+ #
+ 
+systemctl daemon-reload >/dev/null 2>&1 || : 
+if [ $1 -ge 1 ] ; then 
+        # Package upgrade, not uninstall 
+        systemctl try-restart puppet.service >/dev/null 2>&1 || : 
+fi 
+
+ # switch based on systemd vs systemv vs smf vs aix
+ #
+ 
+systemctl daemon-reload >/dev/null 2>&1 || : 
+if [ $1 -ge 1 ] ; then 
+        # Package upgrade, not uninstall 
+        systemctl try-restart mcollective.service >/dev/null 2>&1 || : 
+fi 
+
+ # switch based on systemd vs systemv vs smf vs aix
+ #
+ 
+systemctl daemon-reload >/dev/null 2>&1 || : 
+if [ $1 -ge 1 ] ; then 
+        # Package upgrade, not uninstall 
+        systemctl try-restart pxp-agent.service >/dev/null 2>&1 || : 
+fi
+posttrans scriptlet (using /bin/sh):
+# Run post-transaction scripts on install if defined
+if [ -e /var/lib/rpm-state/puppet-agent/install ] ; then
+ : no postinstall scripts provided
+ rm /var/lib/rpm-state/puppet-agent/install
+fi
+
+# Run post-transaction scripts on upgrade if defined
+if [ -e /var/lib/rpm-state/puppet-agent/upgrade ] ; then
+ # Remove any extra hiera config files we laid down if prev config present
+if [ -e /etc/puppetlabs/puppet/remove_hiera5_files.rm ]; then
+ rm -f /etc/puppetlabs/puppet/hiera.yaml
+ rm -f /etc/puppetlabs/code/environments/production/hiera.yaml
+ rm -f /etc/puppetlabs/puppet/remove_hiera5_files.rm
+fi
+
+# Restore the old hiera, if it existed
+if [ -e /etc/puppetlabs/code/hiera.yaml.pkg-old ]; then
+ mv /etc/puppetlabs/code/hiera.yaml{.pkg-old,}
+fi
+if [ -e /etc/puppetlabs/puppet/hiera.yaml.pkg-old ]; then
+ mv /etc/puppetlabs/puppet/hiera.yaml{.pkg-old,}
+fi
+if [ -e /etc/puppetlabs/code/environments/production/hiera.yaml.pkg-old ]; then
+ mv /etc/puppetlabs/code/environments/production/hiera.yaml{.pkg-old,}
+fi
+
+ rm /var/lib/rpm-state/puppet-agent/upgrade
+fi
